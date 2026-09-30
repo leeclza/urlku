@@ -1,0 +1,7 @@
+lib/
+bin/
+.shards/
+db/*.db
+db/*.db-*
+.env
+spec/

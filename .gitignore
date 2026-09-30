@@ -1,0 +1,18 @@
+# env
+.env
+.env.local
+
+# backend
+backend/lib/
+backend/bin/
+backend/.shards/
+backend/db/*.db
+backend/db/*.db-*
+
+# frontend
+frontend/node_modules/
+frontend/dist/
+
+# misc
+.DS_Store
+Thumbs.db
