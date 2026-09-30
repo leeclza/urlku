@@ -9,6 +9,16 @@ URLKU adalah layanan pemendek URL (URL shortener). Kamu tempel URL panjang, lalu
 - **Frontend:** React + Vite + TypeScript + Tailwind CSS (SPA)
 - **Database:** SQLite (development), siap pindah ke PostgreSQL (production)
 
+## Quick start
+
+```bash
+git clone https://github.com/leeclza/urlku.git
+cd urlku
+docker compose up --build
+```
+
+Buka http://localhost:8080. Short link dilayani di http://localhost:3000.
+
 ---
 
 ## Daftar isi
