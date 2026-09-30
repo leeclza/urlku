@@ -1,1 +1,6 @@
 * text=auto eol=lf
+
+# Exclude frontend test code from GitHub language stats
+frontend/src/**/*.test.ts linguist-documentation
+frontend/src/**/*.test.tsx linguist-documentation
+frontend/src/test/** linguist-documentation
