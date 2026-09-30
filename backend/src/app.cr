@@ -10,5 +10,7 @@ Kemal.config.env = ENV.fetch("KEMAL_ENV", "production")
 Kemal.config.host_binding = config.host
 Kemal.config.shutdown_message = false
 
+Urlku.container.cleanup_job.start
+
 Log.info { "URLKU API #{Urlku::VERSION} → #{config.base_url} (listening on #{config.host}:#{config.port})" }
 Kemal.run(config.port)

@@ -11,7 +11,8 @@ RUN shards install --skip-postinstall
 
 COPY src ./src
 COPY db ./db
-RUN mkdir -p bin && crystal build src/app.cr -o bin/urlku --release --static --no-debug
+RUN mkdir -p bin \
+ && crystal build src/app.cr -o bin/urlku --release --static --no-debug
 
 # ---- Runtime ----
 FROM alpine:3.20

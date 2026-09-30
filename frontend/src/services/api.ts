@@ -80,6 +80,10 @@ export const api = {
     }),
 };
 
+export function qrCodeUrl(code: string, download = false): string {
+  return `${API_URL}/api/links/${encodeURIComponent(code)}/qr.svg${download ? "?download=1" : ""}`;
+}
+
 export function errorMessage(error: unknown): string {
   if (error instanceof ApiError) return error.message;
   return FALLBACK_MESSAGES.INTERNAL_ERROR!;

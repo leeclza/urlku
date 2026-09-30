@@ -3,6 +3,7 @@ import type { CreatedLink } from "../types/link";
 import { formatDateTime, formatNumber } from "../lib/format";
 import { CopyButton } from "./CopyButton";
 import { ChartIcon, ExternalIcon } from "./Icons";
+import { QrCode } from "./QrCode";
 
 export function ResultCard({ link }: { link: CreatedLink }) {
   const display = link.short_url.replace(/^https?:\/\//, "");
@@ -12,7 +13,9 @@ export function ResultCard({ link }: { link: CreatedLink }) {
       <div className="border-b border-slate-100 bg-emerald-50/60 px-5 py-3 text-sm font-semibold text-emerald-700 dark:border-night-line dark:bg-emerald-500/10 dark:text-emerald-400">
         🎉 Link kamu sudah siap!
       </div>
-      <div className="p-5">
+      <div className="flex flex-col gap-5 p-5 sm:flex-row-reverse sm:items-start">
+        <QrCode code={link.short_code} size="sm" />
+        <div className="min-w-0 flex-1">
         <a
           href={link.short_url}
           target="_blank"
@@ -40,6 +43,7 @@ export function ResultCard({ link }: { link: CreatedLink }) {
           <dt className="text-slate-500 dark:text-slate-400">Berlaku sampai</dt>
           <dd>{link.expires_at ? formatDateTime(link.expires_at) : "Selamanya"}</dd>
         </dl>
+        </div>
       </div>
     </section>
   );

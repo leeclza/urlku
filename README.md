@@ -105,6 +105,8 @@ INDEX (expires_at)
 - 🏷️ Alias custom (`urlku.com/toko`) dengan validasi dan pesan error yang jelas
 - ⏳ Masa berlaku link (1/7/30 hari atau tanggal custom)
 - 📊 Statistik: total klik, klik per hari (grafik 30 hari), sumber referrer, perangkat
+- 🔳 QR code untuk setiap link (bisa diunduh)
+- 🧹 Auto-cleanup link kedaluwarsa & data klik lama
 - 📋 Tombol salin dengan feedback "Tersalin!"
 - 🗂️ Dashboard link milikmu (disimpan di browser ini)
 - 🌗 Dark mode
@@ -253,6 +255,9 @@ Repository menulis SQL dengan placeholder `?`, yang otomatis diubah menjadi `$1,
 | `RATE_LIMIT_CREATE_PER_MINUTE` | `20` | Batas `POST /api/links` per client |
 | `RATE_LIMIT_API_PER_MINUTE` | `120` | Batas endpoint `/api/*` lain |
 | `TRUST_PROXY` | `false` | `true` untuk memakai `X-Forwarded-For` (hanya di belakang proxy tepercaya) |
+| `CLEANUP_INTERVAL_MINUTES` | `60` | Seberapa sering auto-cleanup jalan, `0` untuk mematikan |
+| `EXPIRED_LINK_RETENTION_DAYS` | `30` | Link kedaluwarsa dihapus setelah sekian hari |
+| `CLICK_RETENTION_DAYS` | `365` | Data klik detail disimpan sekian hari, `0` = selamanya |
 | `KEMAL_ENV` | `production` | `development` untuk log error yang lebih detail |
 
 **Frontend** (`frontend/.env`, dibaca saat build)
@@ -355,6 +360,9 @@ Mengambil hingga 100 link sekaligus (dipakai dashboard). Response: `{ "links": [
 }
 ```
 
+### `GET /api/links/:short_code/qr.svg`
+QR code (SVG) yang berisi short URL. Dibuat oleh encoder QR murni Crystal (`services/qr_code.cr`, level koreksi M), tanpa library eksternal. Tambahkan `?download=1` untuk mengunduh sebagai file.
+
 ### `DELETE /api/links/:short_code`
 Header wajib: `X-Manage-Token: <token>`. Response **204 No Content**, atau 403 `FORBIDDEN`.
 
@@ -365,6 +373,17 @@ Header wajib: `X-Manage-Token: <token>`. Response **204 No Content**, atau 403 `
 
 ### `GET /health`
 `{ "status": "ok", "version": "1.0.0" }`
+
+---
+
+### Auto-cleanup
+
+Backend menjalankan job di background (fiber Crystal) secara berkala, jadi server yang sudah di-deploy tetap rapi tanpa perlu perintah manual:
+
+- Link yang sudah kedaluwarsa lebih dari `EXPIRED_LINK_RETENTION_DAYS` hari dihapus beserta data kliknya, sehingga aliasnya bisa dipakai lagi.
+- Data klik detail yang lebih lama dari `CLICK_RETENTION_DAYS` hari dihapus. Total klik per link tetap tersimpan.
+
+Atur lewat env `CLEANUP_INTERVAL_MINUTES` (`0` = mati). Lihat tabel *Environment variables*.
 
 ---
 
@@ -383,7 +402,6 @@ Header wajib: `X-Manage-Token: <token>`. Response **204 No Content**, atau 403 `
 
 - Akun pengguna (login) sebagai pengganti manage token di browser
 - Rate limiter Redis + cache lookup redirect
-- QR code untuk setiap link
 - Edit URL tujuan dan masa berlaku
 - Integrasi daftar hitam domain berbahaya (mis. Google Safe Browsing), tanpa fetch URL tujuan
 - Tool migrasi versi skema (saat ini skema bersifat additive/idempotent)

@@ -5,6 +5,7 @@ import { formatDateTime, formatNumber, relativeFromNow } from "../lib/format";
 import { ClickChart } from "../components/ClickChart";
 import { CopyButton } from "../components/CopyButton";
 import { StatusBadge } from "../components/StatusBadge";
+import { QrCode } from "../components/QrCode";
 import { ArrowLeftIcon, ExternalIcon, SpinnerIcon } from "../components/Icons";
 import type { CountBucket } from "../types/link";
 
@@ -85,7 +86,9 @@ export function LinkDetailPage() {
     <div className="mx-auto max-w-4xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
       {back}
 
-      <section className="card mt-5 p-5 sm:p-6">
+      <section className="card mt-5 flex flex-col gap-6 p-5 sm:flex-row-reverse sm:p-6">
+        <QrCode code={l.short_code} />
+        <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="break-all font-mono text-2xl font-bold text-brand-700 sm:text-3xl dark:text-brand-300">
             {l.short_url.replace(/^https?:\/\//, "")}
@@ -123,6 +126,7 @@ export function LinkDetailPage() {
             <dd className="mt-0.5 font-medium">{l.last_clicked_at ? relativeFromNow(l.last_clicked_at) : "Belum ada"}</dd>
           </div>
         </dl>
+        </div>
       </section>
 
       <section className="card mt-5 p-5 sm:p-6">

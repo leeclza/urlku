@@ -25,6 +25,8 @@ require "./services/alias_validator"
 require "./services/short_code_generator"
 require "./services/rate_limiter"
 require "./services/link_service"
+require "./services/maintenance_service"
+require "./services/qr_code"
 require "./middleware/security_headers"
 require "./middleware/cors"
 require "./middleware/rate_limit"
@@ -42,6 +44,7 @@ module Urlku
     getter link_service : LinkService
     getter create_limiter : RateLimiter
     getter api_limiter : RateLimiter
+    getter cleanup_job : CleanupJob
 
     def initialize(@config : Config)
       @db = Database.connect(config.database_url)
@@ -51,6 +54,10 @@ module Urlku
       @link_service = LinkService.new(links, clicks, UrlValidator.new(config.base_host))
       @create_limiter = MemoryRateLimiter.new(config.rate_limit_create, config.rate_limit_window)
       @api_limiter = MemoryRateLimiter.new(config.rate_limit_api, config.rate_limit_window)
+      @cleanup_job = CleanupJob.new(
+        MaintenanceService.new(@db), config.cleanup_interval,
+        config.expired_retention_days, config.click_retention_days,
+      )
     end
   end
 
@@ -108,6 +115,10 @@ module Urlku
 
     get "/api/links/:code/stats" do |env|
       links.stats(env)
+    end
+
+    get "/api/links/:code/qr.svg" do |env|
+      links.qr(env)
     end
 
     delete "/api/links/:code" do |env|

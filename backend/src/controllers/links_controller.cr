@@ -46,6 +46,21 @@ module Urlku
       end
     end
 
+    # GET /api/links/:code/qr.svg[?download=1]
+    def qr(env : HTTP::Server::Context) : String
+      Http.guard(env) do
+        link = @service.find!(env.params.url["code"])
+        svg = QrCode.encode("#{@config.base_url}/#{link.short_code}").to_svg
+        headers = env.response.headers
+        headers["Cache-Control"] = "public, max-age=86400"
+        headers["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'"
+        if env.params.query["download"]? == "1"
+          headers["Content-Disposition"] = %(attachment; filename="urlku-#{link.short_code}.svg")
+        end
+        Http.write(env, 200, "image/svg+xml; charset=utf-8", svg)
+      end
+    end
+
     # DELETE /api/links/:code  (requires X-Manage-Token)
     def destroy(env : HTTP::Server::Context) : String
       Http.guard(env) do

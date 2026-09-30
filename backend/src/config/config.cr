@@ -11,6 +11,9 @@ module Urlku
     getter rate_limit_api : Int32
     getter rate_limit_window : Time::Span
     getter? trust_proxy : Bool
+    getter cleanup_interval : Time::Span
+    getter expired_retention_days : Int32
+    getter click_retention_days : Int32
 
     def initialize(
       @database_url : String,
@@ -23,6 +26,9 @@ module Urlku
       @rate_limit_api : Int32 = 120,
       @rate_limit_window : Time::Span = 1.minute,
       @trust_proxy : Bool = false,
+      @cleanup_interval : Time::Span = 60.minutes,
+      @expired_retention_days : Int32 = 30,
+      @click_retention_days : Int32 = 365,
     )
       @base_url = @base_url.rstrip('/')
       @frontend_url = @frontend_url.rstrip('/')
@@ -49,6 +55,9 @@ module Urlku
         rate_limit_create: int_env("RATE_LIMIT_CREATE_PER_MINUTE", 20),
         rate_limit_api: int_env("RATE_LIMIT_API_PER_MINUTE", 120),
         trust_proxy: ENV.fetch("TRUST_PROXY", "false").downcase.in?("1", "true", "yes"),
+        cleanup_interval: Math.max(int_env("CLEANUP_INTERVAL_MINUTES", 60), 0).minutes,
+        expired_retention_days: Math.max(int_env("EXPIRED_LINK_RETENTION_DAYS", 30), 0),
+        click_retention_days: Math.max(int_env("CLICK_RETENTION_DAYS", 365), 0),
       )
     end
 
