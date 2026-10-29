@@ -19,6 +19,8 @@ docker compose up --build
 
 Buka http://localhost:8080. Short link dilayani di http://localhost:3000.
 
+Mau jalan tanpa Docker atau pakai hot-reload? Lihat [Cara setup & menjalankan](#5-cara-setup--menjalankan).
+
 ---
 
 ## Daftar isi
@@ -226,6 +228,30 @@ npm install
 npm run dev
 ```
 Buka http://localhost:5173.
+
+> Di PowerShell, ganti `cp` dengan `Copy-Item`, dan `./bin/urlku` dengan `.\bin\urlku.exe`.
+
+### Opsi C: Hybrid (backend di Docker, frontend lokal), cocok untuk Windows
+
+Cara ini cocok kalau kamu mau hot-reload frontend tapi belum memasang Crystal.
+
+1. Di `.env` root, arahkan CORS ke dev server Vite:
+   ```env
+   CORS_ORIGIN=http://localhost:5173
+   FRONTEND_URL=http://localhost:5173
+   ```
+2. Jalankan backend saja:
+   ```bash
+   docker compose up --build backend
+   ```
+3. Di terminal lain, jalankan frontend:
+   ```bash
+   cd frontend
+   cp .env.example .env        # VITE_API_URL=http://localhost:3000
+   npm install
+   npm run dev
+   ```
+4. Buka http://localhost:5173. Cek backend di http://localhost:3000/health.
 
 ### Database setup
 
